@@ -1,0 +1,231 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Voice Calculator | Smart Talking Calculator</title>
+  <link rel="stylesheet" href="style.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+</head>
+<body>
+  <div class="background-decor">
+    <div class="blob blob-1"></div>
+    <div class="blob blob-2"></div>
+    <div class="blob blob-3"></div>
+  </div>
+
+  <main class="app-container">
+    <!-- Header -->
+    <header class="app-header">
+      <div class="logo">
+        <div class="logo-icon">🎙️</div>
+        <div>
+          <h1>VoiceCalc AI</h1>
+          <p class="subtitle">Smart Voice-Interactive Calculator</p>
+        </div>
+      </div>
+
+      <div class="header-actions">
+        <button id="permissionBtn" class="btn-chip" title="Microphone Permission Status">
+          <span class="status-dot" id="permDot"></span>
+          <span id="permLabel">Mic Status</span>
+        </button>
+        <button id="historyToggleBtn" class="btn-icon" aria-label="Toggle History" title="Calculation History">
+          📋
+        </button>
+        <button id="settingsToggleBtn" class="btn-icon" aria-label="Settings" title="Voice & Audio Settings">
+          ⚙️
+        </button>
+      </div>
+    </header>
+
+    <!-- Permission Banner (shown if permission is needed or denied) -->
+    <div id="permissionBanner" class="permission-banner hidden">
+      <div class="banner-content">
+        <span class="banner-icon">🎤</span>
+        <div class="banner-text">
+          <strong id="bannerTitle">Microphone Access Required</strong>
+          <p id="bannerDesc">Allow microphone access to calculate hands-free using your voice.</p>
+        </div>
+      </div>
+      <div class="banner-actions">
+        <button id="requestPermBtn" class="btn-primary-small">Enable Microphone</button>
+        <button id="dismissBannerBtn" class="btn-secondary-small">Dismiss</button>
+      </div>
+    </div>
+
+    <!-- Main Content Area: Calculator + History Drawer -->
+    <div class="calculator-layout">
+      <!-- Calculator Body -->
+      <section class="calculator-card">
+        <!-- Display Screen -->
+        <div class="display-container">
+          <div class="voice-feedback" id="voiceFeedback">
+            <span class="voice-badge" id="voiceStatusBadge">
+              <span class="voice-wave">
+                <span></span><span></span><span></span>
+              </span>
+              <span id="voiceStatusText">Voice ready</span>
+            </span>
+            <span class="transcription-text" id="liveTranscript">Say "What is 45 times 6?"</span>
+          </div>
+
+          <div class="calc-screen">
+            <div class="history-expression" id="prevExpressionDisplay">&nbsp;</div>
+            <div class="current-expression" id="expressionDisplay">0</div>
+          </div>
+        </div>
+
+        <!-- Voice Quick Controls -->
+        <div class="voice-quick-bar">
+          <button id="micToggleBtn" class="mic-button" aria-label="Toggle Voice Listening" title="Click to start/stop listening">
+            <span class="mic-icon">🎙️</span>
+            <span class="mic-label" id="micBtnLabel">Tap to Speak</span>
+            <span class="pulsing-ring"></span>
+          </button>
+
+          <button id="speakResultBtn" class="btn-pill" title="Read result aloud">
+            🔊 Speak Answer
+          </button>
+
+          <button id="autoVoiceToggle" class="btn-pill active" title="Toggle automatic voice read-out of answers">
+            🗣️ Auto-Voice: ON
+          </button>
+        </div>
+
+        <!-- Calculator Keypad -->
+        <div class="keypad">
+          <button class="key function" data-action="clear">AC</button>
+          <button class="key function" data-action="delete">⌫</button>
+          <button class="key function" data-action="parentheses">( )</button>
+          <button class="key operator" data-operator="/">÷</button>
+
+          <button class="key num" data-num="7">7</button>
+          <button class="key num" data-num="8">8</button>
+          <button class="key num" data-num="9">9</button>
+          <button class="key operator" data-operator="*">×</button>
+
+          <button class="key num" data-num="4">4</button>
+          <button class="key num" data-num="5">5</button>
+          <button class="key num" data-num="6">6</button>
+          <button class="key operator" data-operator="-">−</button>
+
+          <button class="key num" data-num="1">1</button>
+          <button class="key num" data-num="2">2</button>
+          <button class="key num" data-num="3">3</button>
+          <button class="key operator" data-operator="+">+</button>
+
+          <button class="key function" data-action="percent">%</button>
+          <button class="key num" data-num="0">0</button>
+          <button class="key num" data-num=".">.</button>
+          <button class="key equals" data-action="calculate">=</button>
+        </div>
+      </section>
+
+      <!-- History Panel (Collapsible) -->
+      <aside class="history-panel" id="historyPanel">
+        <div class="panel-header">
+          <h3>History</h3>
+          <div class="panel-header-buttons">
+            <button id="clearHistoryBtn" class="btn-text">Clear</button>
+            <button id="closeHistoryBtn" class="btn-icon-small">✕</button>
+          </div>
+        </div>
+        <div class="history-list" id="historyList">
+          <div class="empty-history">
+            <span>📝</span>
+            <p>No calculations yet. Speak or type a calculation!</p>
+          </div>
+        </div>
+      </aside>
+    </div>
+
+    <!-- Voice Help Hints Section -->
+    <section class="voice-help-card">
+      <div class="help-header">
+        <span class="help-icon">💡</span>
+        <h4>Voice Commands You Can Say:</h4>
+      </div>
+      <div class="help-chips">
+        <span class="chip">"Twenty five plus thirty"</span>
+        <span class="chip">"What is 150 divided by 3"</span>
+        <span class="chip">"45 times 8"</span>
+        <span class="chip">"15 percent of 200"</span>
+        <span class="chip">"Square root of 81"</span>
+        <span class="chip">"Clear" / "Reset"</span>
+        <span class="chip">"Equals" / "Calculate"</span>
+        <span class="chip">"Delete"</span>
+      </div>
+    </section>
+
+    <!-- Settings Modal -->
+    <div id="settingsModal" class="modal-backdrop hidden">
+      <div class="modal-card">
+        <div class="modal-header">
+          <h3>Voice & Audio Settings</h3>
+          <button id="closeSettingsBtn" class="btn-icon-small">✕</button>
+        </div>
+
+        <div class="modal-body">
+          <!-- Voice Selection -->
+          <div class="setting-item">
+            <label for="voiceSelect">Speech Voice</label>
+            <select id="voiceSelect" class="form-control">
+              <option value="">Default System Voice</option>
+            </select>
+          </div>
+
+          <!-- Speech Rate -->
+          <div class="setting-item">
+            <div class="setting-label-row">
+              <label for="rateRange">Speech Speed: <span id="rateVal">1.0x</span></label>
+            </div>
+            <input type="range" id="rateRange" min="0.5" max="2" step="0.1" value="1" class="range-slider">
+          </div>
+
+          <!-- Speech Pitch -->
+          <div class="setting-item">
+            <div class="setting-label-row">
+              <label for="pitchRange">Speech Pitch: <span id="pitchVal">1.0</span></label>
+            </div>
+            <input type="range" id="pitchRange" min="0.5" max="1.5" step="0.1" value="1" class="range-slider">
+          </div>
+
+          <!-- Continuous Listening -->
+          <div class="setting-item switch-row">
+            <div>
+              <label class="switch-title" for="continuousSwitch">Continuous Listening</label>
+              <p class="switch-desc">Keep microphone listening after each command</p>
+            </div>
+            <label class="switch">
+              <input type="checkbox" id="continuousSwitch">
+              <span class="slider round"></span>
+            </label>
+          </div>
+
+          <!-- Sound Effects -->
+          <div class="setting-item switch-row">
+            <div>
+              <label class="switch-title" for="soundEffectsSwitch">Keypad Click Sounds</label>
+              <p class="switch-desc">Play audio clicks on button presses</p>
+            </div>
+            <label class="switch">
+              <input type="checkbox" id="soundEffectsSwitch" checked>
+              <span class="slider round"></span>
+            </label>
+          </div>
+
+          <!-- Test Voice Button -->
+          <div class="setting-actions">
+            <button id="testVoiceBtn" class="btn-secondary">Test Voice Output 🔊</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <script src="app.js"></script>
+</body>
+</html>
